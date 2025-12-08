@@ -9,13 +9,13 @@ Esta API tiene dos responsabilidades principales:
 1. **Recibir datos de sensores**: Los scripts Python de detección envían información sobre direcciones MAC detectadas.
 2. **Servir datos al frontend**: Proporciona endpoints para un futuro panel de control/dashboard.
 
-## Requisitos del Sistema
+## 📋 Requisitos del Sistema
 
 - PHP 8.1 o superior
 - Composer
 - Extensiones PHP: `intl`, `mbstring`, `sqlite3`
 
-## Instalación
+## 🚀 Instalación y Configuración
 
 ### 1. Clonar el repositorio
 ```bash
@@ -29,25 +29,34 @@ composer install
 ```
 
 ### 3. Configurar el entorno
+
+**Para Windows (PowerShell):**
+```powershell
+Copy-Item env .env
+```
+
+**Para Linux/Mac:**
 ```bash
 cp env .env
 ```
 
-Editar el archivo `.env` con la siguiente configuración (ajustar la ruta absoluta):
+Editar el archivo `.env` con la siguiente configuración mínima:
 ```ini
 CI_ENVIRONMENT = development
 
-app.baseURL = 'http://localhost:8080/'
-
-database.default.hostname = 
-database.default.database = /ruta/completa/al/proyecto/writable/database.sqlite
-database.default.DBDriver = SQLite3
-database.default.DBPrefix =
+app.baseURL = http://localhost:8080/
 ```
 
-> **Nota**: SQLite requiere la ruta absoluta al archivo de base de datos.
+> **Nota importante**: La configuración de la base de datos SQLite ya está preconfigurada en `app/Config/Database.php` para usar `writable/database.sqlite` automáticamente. No es necesario configurar nada en el archivo `.env` para la base de datos.
 
 ### 4. Crear archivo de base de datos
+
+**Para Windows (PowerShell):**
+```powershell
+New-Item -ItemType File -Path "writable/database.sqlite" -Force
+```
+
+**Para Linux/Mac:**
 ```bash
 touch writable/database.sqlite
 ```
@@ -69,7 +78,30 @@ php spark serve
 
 El servidor estará disponible en: `http://localhost:8080`
 
-## Estructura de la Base de Datos
+![Página de inicio de CodeIgniter](Capturas/{71A75563-BA4C-49F8-B6E6-357FF92632B0}.png)
+*Figura 1: Página de bienvenida de CodeIgniter 4.6.3 - Confirma que el servidor está funcionando correctamente*
+
+## 📸 Capturas de Funcionamiento
+
+### GET /api/v1/manufacturers
+Lista todos los fabricantes de drones precargados en la base de datos.
+
+![Lista de fabricantes](Capturas/{72CBA5CA-AA7D-48B6-9A82-ECB42CCF4860}.png)
+*Figura 2: Endpoint que devuelve la lista completa de fabricantes conocidos con sus OUIs*
+
+### POST /api/v1/detections
+Registra una nueva detección de drone con información del sensor.
+
+![Crear detección](Capturas/{A3BA3022-C1CC-47DB-9AF3-65B30DD91105}.png)
+*Figura 3: Ejemplo de registro de detección con identificación automática del fabricante por OUI*
+
+### GET /api/v1/stats
+Muestra estadísticas globales del sistema de detección.
+
+![Estadísticas del sistema](Capturas/{AFD59F1D-EF0A-4536-8C8A-BDB25A80FCEE}.png)
+*Figura 4: Dashboard con métricas de detecciones totales, drones conocidos y desconocidos*
+
+## 🗄️ Estructura de la Base de Datos
 
 ### Tabla `manufacturers`
 | Columna | Tipo | Descripción |
@@ -91,7 +123,7 @@ El servidor estará disponible en: `http://localhost:8080`
 | detected_at | DATETIME | Fecha/hora de detección |
 | created_at | DATETIME | Fecha de creación del registro |
 
-## Endpoints de la API
+## 🔌 Endpoints de la API
 
 Base URL: `http://localhost:8080/api/v1`
 
@@ -197,7 +229,7 @@ Estadísticas para el dashboard.
 }
 ```
 
-## Fabricantes Precargados (Seeder)
+## 📦 Fabricantes Precargados (Seeder)
 
 El seeder incluye OUIs de los siguientes fabricantes:
 - DJI Technology Co., Ltd. (varios OUIs)
@@ -206,11 +238,16 @@ El seeder incluye OUIs de los siguientes fabricantes:
 - Espressif Inc. (común en drones DIY)
 - Raspberry Pi Foundation (drones DIY)
 
-## Colección Postman
+## 📮 Colección Postman
 
-Importa el archivo `Drone_Detection_API.postman_collection.json` en Postman para probar todos los endpoints.
+Importa el archivo `Drone_Detection_API.postman_collection.json` en Postman para probar todos los endpoints fácilmente. La colección incluye:
 
-## Comandos Útiles
+- ✅ Ejemplos de todas las peticiones (GET, POST)
+- ✅ Variables de entorno preconfiguradas
+- ✅ Casos de prueba con datos de ejemplo
+- ✅ Documentación de respuestas esperadas
+
+## ⚙️ Comandos Útiles
 
 ```bash
 # Ejecutar migraciones
@@ -229,12 +266,46 @@ php spark serve
 php spark routes
 ```
 
-## Tecnologías
+## 🛠️ Tecnologías Utilizadas
 
-- **Framework**: CodeIgniter 4.6
+- **Framework**: CodeIgniter 4.6.3
+- **Lenguaje**: PHP 8.1+
 - **Base de datos**: SQLite3
-- **PHP**: 8.1+
+- **Arquitectura**: API REST
+- **Patrón**: MVC (Model-View-Controller)
 
-## Licencia
+## 🎯 Características Implementadas
+
+- ✅ **CRUD completo** de detecciones de drones
+- ✅ **Identificación automática** de fabricantes por OUI (primeros 3 octetos de la MAC)
+- ✅ **Paginación** en listado de detecciones
+- ✅ **Filtros avanzados** por fabricante y ubicación
+- ✅ **Estadísticas en tiempo real** para dashboard
+- ✅ **Base de datos SQLite** portable y sin configuración adicional
+- ✅ **Seeders** con fabricantes de drones reales
+- ✅ **Validación de datos** en todas las peticiones
+- ✅ **Respuestas JSON estandarizadas** con códigos HTTP apropiados
+- ✅ **Documentación completa** con ejemplos y capturas
+
+## 📝 Notas Técnicas
+
+### Configuración de Base de Datos
+La aplicación está configurada para usar SQLite3 con la ruta relativa `WRITEPATH . 'database.sqlite'`, lo que hace que funcione automáticamente en cualquier sistema operativo sin necesidad de configurar rutas absolutas en el archivo `.env`.
+
+### Identificación de Fabricantes
+El sistema utiliza el OUI (Organizationally Unique Identifier) - los primeros 3 octetos de una dirección MAC - para identificar automáticamente al fabricante del dispositivo detectado. Esto permite clasificar si un dispositivo es un drone conocido o un dispositivo desconocido.
+
+### Estructura de Respuestas
+Todas las respuestas de la API siguen un formato consistente:
+```json
+{
+    "status": <código_http>,
+    "message": "<mensaje_descriptivo>",  // Solo en errores o creaciones
+    "data": { ... },  // Datos de respuesta
+    "pagination": { ... }  // Solo en listados paginados
+}
+```
+
+## 📄 Licencia
 
 Proyecto educativo - Desarrollo en Entorno Servidor - 2º Grado en Ingeniería Informática
